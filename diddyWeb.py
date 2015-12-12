@@ -35,7 +35,6 @@ running = False
 # Setup the PicoBorg Reverse
 PBR = PicoBorgRev.PicoBorgRev()
 #PBR.i2cAddress = 0x44                  # Uncomment and change the value if you have changed the board address
-PBR.Init()
 
 if not PBR.foundChip:
     boards = PicoBorgRev.ScanForPicoBorgReverse()
@@ -47,10 +46,12 @@ if not PBR.foundChip:
             print '    %02X (%d)' % (board, board)
         print 'If you need to change the I²C address change the setup line so it is correct, e.g.'
         print 'PBR.i2cAddress = 0x%02X' % (boards[0])
-    sys.exit()
-#PBR.SetEpoIgnore(True)                 # Uncomment to disable EPO latch, needed if you do not have a switch / jumper
-PBR.SetCommsFailsafe(False)             # Disable the communications failsafe
-PBR.ResetEpo()
+    #sys.exit()
+else:
+    PBR.Init()
+    #PBR.SetEpoIgnore(True)                 # Uncomment to disable EPO latch, needed if you do not have a switch / jumper
+    PBR.SetCommsFailsafe(False)             # Disable the communications failsafe
+    PBR.ResetEpo()
 
 # Power settings
 voltageIn = 1.2 * 10                    # Total battery voltage to the PicoBorg Reverse
@@ -95,7 +96,8 @@ class Watchdog(threading.Thread):
                     running = False
                     print("Shutting down: Stopping captureThread")
                     captureThread.join()
-                    PBR.MotorsOff()
+                    if PBR.foundChip:
+                        PBR.MotorsOff()
 
 # Image stream processing thread
 class StreamProcessor(threading.Thread):
@@ -190,7 +192,8 @@ class WebServer(SocketServer.BaseRequestHandler):
             httpText += 'Speeds: 0 %, 0 %'
             httpText += '</center></body></html>'
             self.send(httpText)
-            PBR.MotorsOff()
+            if PBR.foundChip:
+                PBR.MotorsOff()
         elif getPath.startswith('/set/'):
             # Motor power setting: /set/driveLeft/driveRight
             parts = getPath.split('/')
@@ -226,8 +229,9 @@ class WebServer(SocketServer.BaseRequestHandler):
             # Set the outputs
             driveLeft *= maxPower
             driveRight *= maxPower
-            PBR.SetMotor1(driveRight)
-            PBR.SetMotor2(-driveLeft)
+            if PBR.foundChip:
+                PBR.SetMotor1(driveRight)
+                PBR.SetMotor2(driveLeft)
         elif getPath.startswith('/photo'):
             # Save camera photo
             lockFrame.acquire()
@@ -376,12 +380,15 @@ except KeyboardInterrupt:
     # CTRL+C exit
     print '\nUser shutdown'
 finally:
+    print("Exception")
     # Turn the motors off under all scenarios
-    PBR.MotorsOff()
-    print 'Motors off'
+    if PBR.foundChip:
+        PBR.MotorsOff()
+        print 'Motors off'
 
     watchdog.terminated = True
     print("Shutting down: Stopping watchdog")
     watchdog.join()
-    PBR.SetLed(True)
+    if PBR.foundChip:
+        PBR.SetLed(True)
     print('Web-server terminated.')
