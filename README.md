@@ -43,10 +43,7 @@ It should be 4 numbers separated by dots, e.g. `192.168.0.198`
 We will need this to access the controls, so make a note of it.
 
 Next run the script for your robot:
-* DiddyBorg Metal Edition → `sudo ~/diddyborg-web/metalWeb.py`
-* DiddyBorg Red Edition → `sudo ~/diddyborg-web/diddyRedWeb.py`
-* DiddyBorg → `sudo ~/diddyborg-web/diddyWeb.py`
-* 4Borg → `sudo ~/diddyborg-web/4BorgWeb.py`
+`sudo ~/diddyborg-web/diddyWeb.py`
 
 Wait for the script to load, when it is ready it should say:
 `Press CTRL+C to terminate the web-server`
@@ -65,6 +62,11 @@ To change the speed, drag the slider before clicking a movement button.
 Left is slower, right is faster.
 
 The last motor settings are displayed below the image.
+
+## Vehicle settings
+There are some settings towards the top of the script which may be changed to match the configuration of your vehicle:
+* `voltageIn` - Total battery voltage to the PicoBorg Reverse
+* `voltageOut` - Maximum motor voltage
 
 ## Alternative options
 There are some other URLs you can use to get different functionality.

@@ -14,6 +14,10 @@ import picamera.array
 import cv2
 import datetime
 
+# Vehicle settings
+voltageIn = 1.2 * 10                    # Total battery voltage to the PicoBorg Reverse
+voltageOut = 6.0                        # Maximum motor voltage
+
 # Settings for the web-page
 webPort = 80                            # Port number for the web-page, 80 is what web-pages normally use
 imageWidth = 240                        # Width of the captured image in pixels
@@ -22,6 +26,7 @@ frameRate = 10                          # Number of images to capture per second
 displayRate = 2                         # Number of images to request per second
 photoDirectory = '/home/pi'             # Directory to save photos to
 timeout = 5
+
 
 # Global values
 global PBR
@@ -46,16 +51,11 @@ if not PBR.foundChip:
             print '    %02X (%d)' % (board, board)
         print 'If you need to change the I²C address change the setup line so it is correct, e.g.'
         print 'PBR.i2cAddress = 0x%02X' % (boards[0])
-    #sys.exit()
 else:
     PBR.Init()
     #PBR.SetEpoIgnore(True)                 # Uncomment to disable EPO latch, needed if you do not have a switch / jumper
     PBR.SetCommsFailsafe(False)             # Disable the communications failsafe
     PBR.ResetEpo()
-
-# Power settings
-voltageIn = 1.2 * 10                    # Total battery voltage to the PicoBorg Reverse
-voltageOut = 6.0                        # Maximum motor voltage
 
 # Setup the power limits
 if voltageOut > voltageIn:
